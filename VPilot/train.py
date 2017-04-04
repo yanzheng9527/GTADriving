@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from keras.optimizers import RMSprop
 from keras.callbacks import ModelCheckpoint
 
-from model import nanoAitorNet
+from model import MeiNet
 
 def acceptSample(sample):
 	throttle = sample[1][4]
@@ -25,11 +25,9 @@ def acceptSample(sample):
 
 if __name__ == '__main__':
 
-	datasetFiles = ['/media/aitor/Data/GTAVDataset_3/dataset.txt', '/media/aitor/Data/GTAVDataset_5/dataset.txt', '/media/aitor/Data/GTAVDataset_6/dataset.txt', 
-					'/media/aitor/Data/GTAVDataset_7/dataset.txt', '/media/aitor/Data/GTAVDataset_8/dataset.txt', '/media/aitor/Data/GTAVDataset_3_2/dataset.txt', 
-					'/media/aitor/Data/GTAVDataset_8_2/dataset.txt']
+	datasetFiles = ['/Users/yanzheng/Downloads/GTAVDataset/dataset.txt']
 	
-	aitorNet = nanoAitorNet()
+	aitorNet = MeiNet()
 
 	dataset = aitorNet.toSequenceDataset(datasetFiles)	
 	dataset = [sample for sample in dataset if acceptSample(sample)]
