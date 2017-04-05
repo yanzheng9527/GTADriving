@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from keras.optimizers import RMSprop
 from keras.callbacks import ModelCheckpoint
 
-from model import MeiNet
+from model import MANet
 
 def acceptSample(sample):
 	throttle = sample[1][4]
@@ -27,19 +27,19 @@ if __name__ == '__main__':
 
 	datasetFiles = ['/Users/yanzheng/Downloads/GTAVDataset/dataset.txt']
 	
-	aitorNet = MeiNet()
+	Net = MANet()
 
-	dataset = aitorNet.toSequenceDataset(datasetFiles)	
+	dataset = Net.toSequenceDataset(datasetFiles)	
 	dataset = [sample for sample in dataset if acceptSample(sample)]
 	
 	valLen = int(len(dataset)*0.1)
 	valDataset = dataset[0:valLen]
 	dataset = np.delete(dataset, np.s_[0:valLen], 0)
 
-	trainGenerator = aitorNet.dataGenerator(dataset)
-	valGenerator = aitorNet.dataGenerator(valDataset)
+	trainGenerator = Net.dataGenerator(dataset)
+	valGenerator = Net.dataGenerator(valDataset)
 
-	model = aitorNet.getModel()
+	model = Net.getModel()
 	model.compile(optimizer=RMSprop(), loss='mse', clipnorm=1.0)
 	ckp_callback = ModelCheckpoint("model.h5", monitor="val_loss", save_best_only=True, save_weights_only=True, mode='min')
 	

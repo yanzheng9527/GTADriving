@@ -13,7 +13,7 @@ from keras.layers.normalization import BatchNormalization
 from keras.layers.core import  Lambda
 from keras.layers.wrappers import TimeDistributed
 from keras.layers.recurrent import LSTM
-from keras.layers import Lambda, Conv2D, MaxPooling2D, Dropout, Dense, Flatten
+from keras.layers import Lambda, Conv2D, MaxPooling2D, Dropout, Dense, Flatten, Activation
 
 class BaseModel:
 	def __init__(self, lookback=50, width=320, height=160, channels=3):
@@ -138,6 +138,84 @@ class MeiNet(BaseModel):
 		model.add(Dropout(0.5))
 		model.add(Dense(2, init='he_normal', activation='tanh', name='output'))	
 		
+
+		if(weights_path):
+			model.load_weights(weights_path)
+
+		return model
+
+class Mei2Net(BaseModel):
+	
+	def getModel(self, weights_path=None):
+		model = Sequential() 
+		model.add(TimeDistributed(Lambda(lambda x: x/127.5 - 1.0), input_shape=(self.lookback, self.height, self.width, self.channels)))
+		
+		model.add(TimeDistributed(Convolution2D(24, 5, 5, subsample=(2,2), border_mode='same', init='he_normal', activation='relu', name='conv1')))
+		model.add(BatchNormalization())
+
+		model.add(Dropout(0.2))
+		model.add(TimeDistributed(Convolution2D(36, 5, 5, subsample=(2,2), border_mode='same', init='he_normal', activation='relu', name='conv2')))
+		model.add(BatchNormalization())
+
+		model.add(TimeDistributed(Convolution2D(48, 5, 5, subsample=(2,2), border_mode='same', init='he_normal', activation='relu', name='conv3')))
+		model.add(BatchNormalization())
+		
+		model.add(TimeDistributed(Convolution2D(64, 3, 3, border_mode='same', init='he_normal', activation='relu', name='conv4')))
+		model.add(BatchNormalization())
+
+		model.add(TimeDistributed(Convolution2D(48, 3, 3, border_mode='same', init='he_normal', activation='relu', name='conv5')))
+		model.add(BatchNormalization())
+   
+		model.add(TimeDistributed(Flatten()))
+
+
+		model.add(LSTM(432,init='he_normal',activation='sigmoid',dropout_W = 0.5,dropout_U = 0.5))
+		model.add(Dropout(0.1))
+
+		model.add(Dropout(0.2))
+		model.add(Dense(100, init='he_normal'))
+		model.add(Dropout(0.2))
+		model.add(Dense(50, init='he_normal'))
+		model.add(Dense(10, init='he_normal'))
+		model.add(Dense(2, init='he_normal', activation='tanh', name='output'))	
+		if(weights_path):
+			model.load_weights(weights_path)
+
+		return model
+
+class MANet(BaseModel):
+	
+	def getModel(self, weights_path=None):
+		model = Sequential()
+		model.add(TimeDistributed(Lambda(lambda x: x/127.5 - 1.0), input_shape=(self.lookback, self.height, self.width, self.channels)))
+
+		model.add(TimeDistributed(Convolution2D(32, 5, 5, subsample=(2,2), border_mode='same', init='he_normal', activation='elu', name='conv1')))
+		model.add(BatchNormalization())
+
+		model.add(TimeDistributed(Convolution2D(48, 5, 5, subsample=(2,2), border_mode='same', init='he_normal', activation='elu', name='conv2')))
+		model.add(BatchNormalization())
+
+		model.add(TimeDistributed(Convolution2D(64, 5, 5, subsample=(2,2), border_mode='same', init='he_normal', activation='elu', name='conv3')))
+		model.add(BatchNormalization())
+
+		model.add(TimeDistributed(Convolution2D(86, 3, 3, border_mode='same', init='he_normal', activation='elu', name='conv4')))
+		model.add(BatchNormalization())
+		
+		model.add(TimeDistributed(Convolution2D(86, 3, 3, border_mode='same', init='he_normal', activation='elu', name='conv5')))
+		model.add(BatchNormalization())
+
+		model.add(TimeDistributed(Flatten()))
+
+		model.add(TimeDistributed(Dense(1024, init='he_normal', activation='elu', name='Dense_1')))
+		model.add(Dropout(0.5))
+
+		model.add(LSTM(512, return_sequences=False, init='he_normal', name='LSTM_1'))
+		model.add(Dropout(0.5))
+
+		model.add(Dense(256, init='he_normal', activation='elu', name='Dense_2'))
+		model.add(Dropout(0.5))
+
+		model.add(Dense(2, init='he_normal', activation='tanh', name='output'))	
 
 		if(weights_path):
 			model.load_weights(weights_path)
