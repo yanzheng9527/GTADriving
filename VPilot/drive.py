@@ -2,7 +2,7 @@ import argparse
 import socket, struct
 import numpy as np
 from array import array
-from model import nanoAitorNet
+from model import MANet
 
 class Server:
 	def __init__(self, port=8000, image_size=(200,66)):
@@ -51,7 +51,7 @@ if __name__ == '__main__':
 	parser.add_argument('height', type=int, help='Height of the image to receive')
 	args = parser.parse_args()
 
-	aitorNet = nanoAitorNet()
+	aitorNet = MANet()
 	model = aitorNet.getModel(weights_path=args.weights)
 	x = np.zeros((50, args.height, args.width, 3), dtype='float32')
 
