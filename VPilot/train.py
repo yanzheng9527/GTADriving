@@ -25,7 +25,7 @@ def acceptSample(sample):
 
 if __name__ == '__main__':
 
-	datasetFiles = ['/Users/yanzheng/Downloads/GTAVDataset/dataset.txt']
+	datasetFiles = ['/Users/yanzheng/Downloads/GTAVDataset2/dataset.txt']
 	
 	Net = MANet()
 
