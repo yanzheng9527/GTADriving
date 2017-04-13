@@ -8,29 +8,17 @@ import matplotlib.pyplot as plt
 from keras.optimizers import RMSprop
 from keras.callbacks import ModelCheckpoint
 
-from model import MANet
+from model import MANet,VGGNet
 
-def acceptSample(sample):
-	throttle = sample[1][4]
-	steering = sample[1][3]
-
-	if (np.absolute(steering) > 0.025 and throttle > 0.15):
-		return True
-	
-	if(throttle < 0.15 or np.absolute(steering) < 0.025):
-		if(np.random.rand() > 0.95):
-			return True
-
-	return False
 
 if __name__ == '__main__':
 
-	datasetFiles = ['/Users/yanzheng/Downloads/GTAVDataset2/dataset.txt']
+	datasetFiles = ['/Users/yanzheng/Downloads/GTAVDataset/dataset.txt']
 	
 	Net = MANet()
 
 	dataset = Net.toSequenceDataset(datasetFiles)	
-	dataset = [sample for sample in dataset if acceptSample(sample)]
+	dataset = [sample for sample in dataset]
 	
 	valLen = int(len(dataset)*0.1)
 	valDataset = dataset[0:valLen]

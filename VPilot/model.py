@@ -6,13 +6,15 @@ import cv2
 import os
 import random
 
-from keras.models import Sequential
+from keras.models import Sequential, Model
 from keras.layers import Flatten, Dense, Dropout
 from keras.layers.convolutional import Convolution2D
 from keras.layers.normalization import BatchNormalization
 from keras.layers.core import  Lambda
+from keras.layers import Input
 from keras.layers.wrappers import TimeDistributed
 from keras.layers.recurrent import LSTM
+from keras.applications.vgg16 import VGG16
 from keras.layers import Lambda, Conv2D, MaxPooling2D, Dropout, Dense, Flatten, Activation
 
 class BaseModel:
@@ -221,6 +223,43 @@ class MANet(BaseModel):
 			model.load_weights(weights_path)
 
 		return model
+
+class VGGNet(BaseModel):
+	
+	def getModel(self, weights_path=None):
+		input_layer = Input(shape=(self.lookback, self.height, self.width, self.channels))
+		input_layer = Lambda(lambda x: x/255.-.5)(input_layer)
+		# Test this with bigger datasets
+		# input_layer = Convolution2D(3,1,1,border_mode='same',name='input_conv')(input_layer)
+		vgg_16_model = VGG16(weights='imagenet', include_top=False, input_tensor=input_layer)
+		output_layer = vgg_16_model.output
+		output_layer = Flatten()(output_layer)
+		output_layer = Dense(1024, activation='elu', name='fc1')(output_layer)
+		output_layer = Dropout(0.5, name='fc1_dropout')(output_layer)
+    
+		output_layer = Dense(512, activation='elu', name='fc2')(output_layer)
+		output_layer = Dropout(0.5, name='fc2_dropout')(output_layer)
+    
+		output_layer = Dense(256, activation='elu', name='fc3')(output_layer)
+		output_layer = Dropout(0.5, name='fc3_dropout')(output_layer)
+    
+		output_layer = Dense(128, activation='elu', name='fc4')(output_layer)
+		output_layer = Dropout(0.5,name='fc4_dropout')(output_layer)
+    
+		output_layer = Dense(64, activation='elu', name='fc5')(output_layer)
+		output_layer = Dropout(0.5,name='fc5_dropout')(output_layer)
+    
+		output_layer = Dense(32, activation='elu', name='fc6')(output_layer)
+		output_layer = Dropout(0.5,name='fc6_dropout')(output_layer)
+    
+		output_layer = Dense(1, init='zero', name='output_layer')(output_layer)
+		model = Model(input=vgg_16_model.input, output=output_layer)  
+		if(weights_path):
+			model.load_weights(weights_path)
+
+		return model
+
+		
 		
 	
 	
