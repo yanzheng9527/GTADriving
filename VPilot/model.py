@@ -70,7 +70,7 @@ class BaseModel:
 					x.fill(0)
 					y.fill(0) 
 
-
+'''
 class nanoAitorNet(BaseModel):
 	
 	def getModel(self, weights_path=None):
@@ -184,7 +184,7 @@ class Mei2Net(BaseModel):
 			model.load_weights(weights_path)
 
 		return model
-
+'''
 class MANet(BaseModel):
 	
 	def getModel(self, weights_path=None):
@@ -223,7 +223,7 @@ class MANet(BaseModel):
 			model.load_weights(weights_path)
 
 		return model
-
+'''
 class VGGNet(BaseModel):
 	
 	def getModel(self, weights_path=None):
@@ -258,8 +258,7 @@ class VGGNet(BaseModel):
 			model.load_weights(weights_path)
 
 		return model
-
-		
+'''
 		
 	
 	
